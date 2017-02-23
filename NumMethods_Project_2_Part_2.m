@@ -1,0 +1,156 @@
+%Project 2 Part 2 
+%Input: first order differential equation (reduced in order if necessary), method to solve, endpoints, number of iterations 
+%Output: numerical solution (y and y') 
+
+
+clear all
+ syms('F', 'OK', 'A', 'B', 'ALPHA', 'BETA', 'N', 'FLAG', 'NAME', 'OUP', 'METHOD');
+ syms('H', 'T', 'W', 'I', 'K1', 'K2', 'K3', 'K4', 'T0', 'W0', 'J');
+ syms('t','y', 'z', 's');
+ 
+ TRUE = 1;
+ FALSE = 0;
+    fprintf(1,'Setting y'' = z \n');
+     fprintf(1,'Input the [reduced order] function F(t,y,z) in terms of t, y, z\n');
+     s = input(' ');
+     F = inline(s,'t','y','z'); %F is the reduced-order function 
+     %F = 6*exp(-t) - 2*y + 3*z; 
+     %F(tyz) = y''
+ OK = FALSE;
+     while OK == FALSE 
+     fprintf(1,'Input left and right endpoints on separate lines.\n');
+     A = input(' ');
+     B = input(' ');
+     if A >= B  
+     fprintf(1,'Left endpoint must be less than right endpoint\n');
+     else
+     OK = TRUE;
+     end;
+     end;
+ %A = 0; 
+ %B = 1; 
+    fprintf(1,'Input the initial condition: y(A) = ? \n');
+    ALPHA = input(' '); 
+     
+    fprintf(1,'Input the initial condition: y''(A) = ?\n');
+    BETA = input(' ');
+ OK = FALSE;
+ %ALPHA = 2; 
+  while OK == FALSE %max # of iteration check 
+       fprintf(1,'Input maximum number of iterations - no decimal point\n');
+       N = input(' '); %number of iterations
+        if N <= 0 
+            fprintf(1,'Must be positive integer\n');
+        else 
+            OK = TRUE;
+       end
+ end
+ 
+ T = zeros(1,N+1); %VALUES OF T AT WHICH APPROXIMATE SOLUTIONS HAVE BEEN CALCULATED
+ V = zeros(1,N+1); %VALUES OF Z = Y'; 
+ W = zeros(1,N+1); %VALUES OF APPROXIMATE SOLUTIONS, OF Yn ||Z' = 6*e^-t - 2*y + 3*z 
+ X = zeros(1,N+1); %VALUES OF Y''
+ 
+ H = (B-A)/N;
+ T(1) = A; % T VALUES
+ 
+ for i=1:N
+     T(i+1) = T(i) + H;
+ end
+ 
+ W(1) = ALPHA; % Y(A) VALUES
+ V(1) = BETA; %y'(A) = 2, y' = Z VALUES 
+ 
+fprintf(1, 'Solving Method?\n');
+fprintf(1, '1. Runge-Kutta \n');
+fprintf(1, '2. Adams Predictor-Corrector\n');
+OK = FALSE;
+
+% ------METHOD DETECTOR------- 
+while OK == FALSE
+    fprintf(1, 'Enter 1 or 2\n');
+    METHOD = input(' ');
+    
+    if METHOD >= 1 && METHOD <=2
+        OK = TRUE;
+    else
+        fprintf(1, '1 OR 2 \n');
+    end
+end
+ OUP = 1;
+ %---------------------RUNGE KUTTA CODE------------------------------------
+ if METHOD == 1
+     fprintf(OUP, 'CLASSICAL RK4\n');
+     fprintf(OUP, 't     v     w\n');
+     
+     for I = 1:N 
+
+         L1 = H*F(T(I),W(I),V(I)); %F(TYZ)
+         K1 = H*V(I);
+         
+         L2 = H*F(T(I)+0.5*H, W(I)+0.5*K1, V(I)+0.5*L1);
+         K2 = H*(V(I)+0.5*L1);
+         
+         L3 = H*F(T(I)+0.5*H, W(I)+0.5*K2, V(I)+0.5*L2);
+         K3 = H*(V(I)+0.5*L2);
+         
+         L4 = H*F(T(I)+H, W(I)+K3, V(I)+L3);
+         K4 = H*(V(I)+L3);
+         
+         W(I+1) = W(I)+(K1+2.0*(K2+K3)+K4)/6.0;
+         V(I+1) = V(I)+(L1+2.0*(L2+L3)+L4)/6.0;         
+
+         fprintf(OUP, '%5.3f %5.3f %11.7f\n', T(I+1), V(I+1), W(I+1));
+     end;
+ end 
+ %-------------------PREDICTOR CORRECTOR CODE------------------------------
+ if METHOD == 2
+     fprintf(OUP, 'ADAMS-BASHFORTH 4TH ORDER PREDICTOR CORRECTOR METHOD\n\n');
+     fprintf(OUP, 't     v     w\n');
+    % STEP 1
+     fprintf(OUP, '%5.3f %5.3f %11.7f\n', T(1), V(1), W(1));
+    % STEP 2
+     for I = 1:3 
+    % STEP 3 AND 4
+    % compute starting values using Runge-Kutta method
+        X(I)= F(T(I), W(I), V(I));
+        
+         L1 = H*F(T(I),W(I),V(I)); %F(TYZ)
+         K1 = H*V(I);
+         
+         L2 = H*F(T(I)+0.5*H, W(I)+0.5*K1, V(I)+0.5*L1);
+         K2 = H*(V(I)+0.5*L1);
+         
+         L3 = H*F(T(I)+0.5*H, W(I)+0.5*K2, V(I)+0.5*L2);
+         K3 = H*(V(I)+0.5*L2);
+         
+         L4 = H*F(T(I)+H, W(I)+K3, V(I)+L3);
+         K4 = H*(V(I)+L3);
+         
+         W(I+1) = W(I)+(K1+2.0*(K2+K3)+K4)/6.0;
+         V(I+1) = V(I)+(L1+2.0*(L2+L3)+L4)/6.0;        
+    % STEP 5
+     fprintf(OUP, '%5.3f %5.3f %11.7f\n', T(I+1), V(I+1), W(I+1));
+     end;
+    P_Y = zeros(1,N+1); 
+    P_Z = zeros(1,N+1); 
+    P_ZPrime = zeros(1,N+1); 
+
+     for I = 4:N
+        X(I)= F(T(I), W(I), V(I));
+        % PREDICTORS 
+        P_Y(I+1) = W(I)+(H/24)*(55*V(I)-59*V(I-1)+37*V(I-2)-9*V(I-3));
+        P_Z(I+1) = V(I)+(H/24)*(55*X(I)-59*X(I-1)+37*X(I-2)-9*X(I-3));
+        P_ZPrime(I) = F(T(I), P_Y(I), P_Z(I)); 
+
+        %corrector term in the term to calculate y_n. py' is pz. yn array is W
+
+        W(I+1) = W(I)+ (H/24)*(9*P_Z(I+1) + 19*V(I) - 5*V(I-1) + V(I-2));
+
+        %corrector term applied to z_n term. zn array is called V. 
+        V(I+1) = V(I)+(H/24)*(9*P_ZPrime(I+1) + 19*X(I) - 5*X(I-1) + X(I-2));  
+        
+        fprintf(OUP, '%5.3f %5.3f %11.7f\n', T(I+1), V(I+1), W(I+1));
+     end;
+ end
+%-------------------------------------------------
