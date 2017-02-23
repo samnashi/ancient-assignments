@@ -17,7 +17,7 @@ REAL FUNCTION ConvertToCoordinateY(Y)
 END FUNCTIOn ConvertToCoordinateY
 
 
-PROGRAM A3_260260108v2
+PROGRAM A3
 IMPLICIT NONE
 INTEGER :: loopCounter1, loopCounter2, TopPointElevation, LowestPointElevation
 INTEGER :: WaterGridsTotal, i, j
