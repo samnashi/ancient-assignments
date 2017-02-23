@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.params=x\ y\ width\ height
+comment0.target=BarChart(int,\ int,\ int,\ int)
+comment1.params=label\ value\ color
+comment1.target=void\ addBar(String,\ int,\ Color)
+comment2.target=void\ draw()
+numComments=3

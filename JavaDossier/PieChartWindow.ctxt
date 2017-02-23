@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=PieChartWindow()
+comment1.params=ratio\ label\ style
+comment1.target=void\ addSector(double,\ String,\ GStyle)
+comment2.target=GStyle\ getStyle()
+numComments=3

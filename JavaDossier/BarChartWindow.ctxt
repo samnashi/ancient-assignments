@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.params=sizeHoriz\ chartSizeVert
+comment0.target=BarChartWindow(int,\ int)
+comment1.params=label\ val\ color
+comment1.target=void\ addBar(String,\ int,\ Color)
+comment2.target=Color\ getColor()
+numComments=3
